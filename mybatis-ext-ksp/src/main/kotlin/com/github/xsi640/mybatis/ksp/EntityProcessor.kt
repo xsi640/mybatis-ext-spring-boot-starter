@@ -16,6 +16,9 @@ class EntityProcessor(
     private val logger: KSPLogger
 ) : SymbolProcessor {
 
+    val classDeclarationExtractorFactory = ClassDeclarationExtractorFactory.build()
+    val codeGeneratorFactory = CodeGeneratorFactory.build()
+
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver.getSymbolsWithAnnotation(Table::class.qualifiedName!!)
         symbols.filter {
@@ -27,6 +30,14 @@ class EntityProcessor(
     }
 
     inner class TableVisitor : KSVisitorVoid() {
-
+        override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
+            val classDeclarationExtractor = classDeclarationExtractorFactory.create()
+            val mapperCodeGenerator = codeGeneratorFactory.create()
+            val tableDescribe = classDeclarationExtractor.table(classDeclaration)
+            val indexDescribes = classDeclarationExtractor.index(classDeclaration)
+            val name = classDeclaration.simpleName.getShortName()
+            val packageName = classDeclaration.packageName.asString() + ".mapper"
+            mapperCodeGenerator.generate(codeGenerator, packageName, name, tableDescribe)
+        }
     }
 }
