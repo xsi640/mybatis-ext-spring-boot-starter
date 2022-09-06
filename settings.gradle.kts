@@ -1,9 +1,6 @@
 rootProject.name = "mybatis-ext"
 
 pluginManagement {
-    val user = System.getProperty("repoUser")
-    val pwd = System.getProperty("repoPassword")
-
     val kotlinVersion: String by settings
     val kspVersion: String by settings
     val springBootVersion: String by settings

@@ -6,7 +6,6 @@ plugins {
     id("java")
     kotlin("jvm")
     kotlin("plugin.spring")
-    kotlin("plugin.jpa") apply false
     kotlin("plugin.noarg") apply false
     kotlin("plugin.allopen") apply false
     kotlin("kapt") apply false
@@ -29,13 +28,6 @@ allprojects {
     version = "0.0.1"
     java.sourceCompatibility = JavaVersion.VERSION_1_8
     java.targetCompatibility = JavaVersion.VERSION_1_8
-
-    val vers = mapOf(
-        "springboot-mybatis" to "2.2.2",
-        "kotlinpoet" to "1.11.0",
-    )
-
-    rootProject.extra.set("vers", vers)
 
     dependencies {
         implementation("org.jetbrains.kotlin:kotlin-reflect")

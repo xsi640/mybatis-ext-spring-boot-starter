@@ -1,12 +1,12 @@
-val vers = rootProject.extra.get("vers") as Map<String, String>
 val kspVersion: String by project
+val springBootMybatisVersion: String by project
 
 plugins {
     id("kotlin-noarg")
 }
 
 dependencies {
-    api("org.mybatis.spring.boot:mybatis-spring-boot-starter:${vers["springboot-mybatis"]}")
+    api("org.mybatis.spring.boot:mybatis-spring-boot-starter:$springBootMybatisVersion")
 }
 
 noArg {

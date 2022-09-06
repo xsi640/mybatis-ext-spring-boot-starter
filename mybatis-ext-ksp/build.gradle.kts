@@ -1,5 +1,7 @@
-val vers = rootProject.extra.get("vers") as Map<String, String>
 val kspVersion: String by project
+val kotlinPoetVersion: String by project
+val kotlinTestJunitVersion: String by project
+val kotlinCompileTestingVersion: String by project
 
 plugins {
     id("com.google.devtools.ksp")
@@ -8,14 +10,14 @@ plugins {
 
 dependencies {
     implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
-    implementation("com.squareup:kotlinpoet:${vers["kotlinpoet"]}")
-    implementation("com.squareup:kotlinpoet-ksp:${vers["kotlinpoet"]}")
+    implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
+    implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
 
     api(project(":mybatis-ext-core"))
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.32")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:1.4.8")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.8")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinTestJunitVersion")
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:$kotlinCompileTestingVersion")
+    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:$kotlinCompileTestingVersion")
 }
 
 noArg {
