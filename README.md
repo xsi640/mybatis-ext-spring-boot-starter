@@ -1,0 +1,36 @@
+# mybatis-ext-spring-boot-starter
+非侵入式mybatis扩展和辅助工具，只是在mybatis的基础上做封装和扩展，不会破坏mybatis框架中的原有功能。
+
+### 特性
+
+- 非侵入式
+- 注解方式定义实体
+- 使用ksp自动生成mapper
+- 支持分页
+- 支持DSL查询
+- 自动对比实体类和数据库中的schema，提供建议的sql修改方案
+
+
+
+### 支持的数据库
+
+- MySQL
+- Postgresql
+- H2
+
+### 目前状态
+开发中。
+
+
+
+### 任务列表
+
+- [ ] 基本注解开发
+- [ ] 基本注解转Entity开发
+- [ ] KSP部分开发
+  - [ ] Mapper开发
+  - [ ] Provider开发
+- [ ] 分页开发
+- [ ] 审计开发
+- [ ] DSL开发
+

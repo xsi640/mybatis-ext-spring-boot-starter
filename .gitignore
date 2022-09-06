@@ -1,0 +1,17 @@
+/target/
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+.idea
+
+### mac os ###
+.DS_Store
+
+.gradle
+**/out/**
+**/build/**
+*.log
+._*
