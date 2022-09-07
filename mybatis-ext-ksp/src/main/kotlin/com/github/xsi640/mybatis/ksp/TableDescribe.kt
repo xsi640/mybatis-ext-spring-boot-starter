@@ -1,11 +1,9 @@
 package com.github.xsi640.mybatis.ksp
 
-import ch.qos.logback.classic.pattern.PropertyConverter
 import com.github.xsi640.mybatis.core.TemporalType
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import org.apache.ibatis.type.JdbcType
-import kotlin.reflect.KClass
 
 data class TableDescribe(
     val schema: String,

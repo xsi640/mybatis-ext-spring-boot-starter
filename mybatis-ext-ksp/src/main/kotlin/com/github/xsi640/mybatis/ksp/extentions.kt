@@ -19,13 +19,8 @@ fun KSAnnotation.getArgument(name: String): KSValueArgument? {
     return this.arguments.firstOrNull { it.name?.getShortName() == name }
 }
 
-fun KSAnnotation.getArgumentType(name: String): KSType? {
-    val annotation = this.getArgument(name)
-    return if (annotation != null) {
-        annotation.value as KSType
-    } else {
-        null
-    }
+fun KSAnnotation.getArgumentValue(name: String): Any? {
+    return getArgument(name)?.value
 }
 
 fun KSType.getShortName(): String {

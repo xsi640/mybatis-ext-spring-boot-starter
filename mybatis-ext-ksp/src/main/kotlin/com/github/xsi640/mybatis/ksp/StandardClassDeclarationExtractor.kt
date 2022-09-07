@@ -3,15 +3,16 @@ package com.github.xsi640.mybatis.ksp
 import com.github.xsi640.mybatis.core.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSType
 import org.apache.ibatis.type.JdbcType
 
 class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
     override fun table(classDeclaration: KSClassDeclaration): TableDescribe {
         val table = classDeclaration.getAnnotation(Table::class) ?: throw IllegalArgumentException()
-        val tableName = table.getArgumentType("name")?.toString()!!.ifEmpty {
+        val tableName = table.getArgumentValue("name")?.toString()!!.ifEmpty {
             classDeclaration.getShortName()
         }
-        val schemaName = table.getArgumentType("schema")?.toString()!!
+        val schemaName = table.getArgumentValue("schema")?.toString()!!
         val columns = mutableListOf<ColumnDescribe>()
         columns(classDeclaration, columns)
         var current = classDeclaration.getSupperClassDeclaration()
@@ -30,9 +31,10 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
     override fun index(classDeclaration: KSClassDeclaration): List<IndexDescribe> {
         val indexes = classDeclaration.getAnnotations(Index::class)
         return indexes.map {
-            val name = it.getArgumentType("name")?.toString()!!
-            val properties = it.getArgumentType("properties")
-            val unique = it.getArgumentType("unique")!!.toString().toBoolean()
+            val name = it.getArgumentValue("name")?.toString()!!
+            @Suppress("UNCHECKED_CAST")
+            val properties = it.getArgumentValue("properties") as List<String>
+            val unique = it.getArgumentValue("unique")!!.toString().toBoolean()
             IndexDescribe(
                 name = name,
                 properties = emptyArray(),
@@ -40,7 +42,6 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
                 classDeclaration = classDeclaration
             )
         }
-        TODO("properties读取未完成。")
     }
 
     private fun columns(classDeclaration: KSClassDeclaration, columns: MutableList<ColumnDescribe>) {
@@ -61,19 +62,19 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
             val name = if (column == null) {
                 propertyName
             } else {
-                column.getArgumentType("name")?.toString()!!.ifEmpty {
+                column.getArgumentValue("name")?.toString()!!.ifEmpty {
                     propertyName
                 }
             }
             val nullable = if (column == null) {
                 true
             } else {
-                column.getArgumentType("nullable")?.toString().toBoolean()
+                column.getArgumentValue("nullable")?.toString().toBoolean()
             }
             val javaType = if (converter == null) {
                 null
             } else {
-                val cJavaType = converter.getArgumentType("javaType")!!
+                val cJavaType = converter.getArgumentValue("javaType") as KSType
                 if (Unit::class.simpleName == cJavaType.getShortName() ||
                     Void::class.simpleName == cJavaType.getShortName()
                 ) {
@@ -85,7 +86,7 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
             val jdbcType = if (converter == null) {
                 null
             } else {
-                val cJdbcType = converter.getArgumentType("jdbcType")!!
+                val cJdbcType = converter.getArgumentValue("jdbcType") as KSType
                 if (JdbcType.UNDEFINED::class.simpleName == cJdbcType.getShortName()) {
                     null
                 } else {
@@ -100,7 +101,7 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
             val typeHandler = if (converter == null) {
                 null
             } else {
-                val typeHandlerType = converter.getArgumentType("typeHandler")!!
+                val typeHandlerType = converter.getArgumentValue("typeHandler") as KSType
                 if (EmptyPropertyConverter::class.simpleName
                     == typeHandlerType.getShortName()
                 ) {
@@ -112,26 +113,28 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
             val primaryKeyGenerate = if (id == null) {
                 null
             } else {
-                id.getArgumentType("generate")?.toString().toBoolean()
+                id.getArgumentValue("generate")?.toString().toBoolean()
             }
             val temporalType = if (temporal == null) {
                 null
             } else {
-                val cTemporal = temporal.getArgumentType("type")!!
+                val cTemporal = temporal.getArgumentValue("type") as KSType
                 val sTemporal = cTemporal.getShortName()
                 TemporalType.valueOf(sTemporal)
             }
             val embed = embedded != null
-            ColumnDescribe(
-                name = name,
-                type = propertyDeclaration.type.resolve(),
-                nullable = nullable,
-                javaType = javaType,
-                jdbcType = jdbcType,
-                typeHandler = typeHandler,
-                primaryKeyGenerate = primaryKeyGenerate,
-                temporalType = temporalType,
-                embedded = embed
+            columns.add(
+                ColumnDescribe(
+                    name = name,
+                    type = propertyDeclaration.type.resolve(),
+                    nullable = nullable,
+                    javaType = javaType,
+                    jdbcType = jdbcType,
+                    typeHandler = typeHandler,
+                    primaryKeyGenerate = primaryKeyGenerate,
+                    temporalType = temporalType,
+                    embedded = embed
+                )
             )
         }
     }
