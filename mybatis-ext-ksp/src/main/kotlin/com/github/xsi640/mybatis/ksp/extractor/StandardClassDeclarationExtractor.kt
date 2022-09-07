@@ -1,6 +1,7 @@
-package com.github.xsi640.mybatis.ksp
+package com.github.xsi640.mybatis.ksp.extractor
 
 import com.github.xsi640.mybatis.core.*
+import com.github.xsi640.mybatis.ksp.*
 import com.google.devtools.ksp.getDeclaredProperties
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSType

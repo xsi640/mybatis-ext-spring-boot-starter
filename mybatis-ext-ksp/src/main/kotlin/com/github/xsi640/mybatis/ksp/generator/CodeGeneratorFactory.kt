@@ -1,4 +1,4 @@
-package com.github.xsi640.mybatis.ksp
+package com.github.xsi640.mybatis.ksp.generator
 
 interface CodeGeneratorFactory {
     fun create(): CodeGenerator

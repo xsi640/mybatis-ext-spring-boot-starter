@@ -1,6 +1,8 @@
 package com.github.xsi640.mybatis.ksp
 
 import com.github.xsi640.mybatis.core.Table
+import com.github.xsi640.mybatis.ksp.extractor.ClassDeclarationExtractorFactory
+import com.github.xsi640.mybatis.ksp.generator.CodeGeneratorFactory
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver

@@ -1,4 +1,4 @@
-package com.github.xsi640.mybatis.ksp
+package com.github.xsi640.mybatis.ksp.extractor
 
 interface ClassDeclarationExtractorFactory {
     fun create(): ClassDeclarationExtractor
