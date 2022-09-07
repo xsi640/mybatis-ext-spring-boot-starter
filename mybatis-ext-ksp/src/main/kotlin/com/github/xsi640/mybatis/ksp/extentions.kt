@@ -7,6 +7,10 @@ fun KSClassDeclaration.getAnnotation(kClass: KClass<*>): KSAnnotation? {
     return this.annotations.firstOrNull { it.shortName.getShortName() == kClass.simpleName }
 }
 
+fun KSClassDeclaration.getAnnotations(kClass: KClass<*>): List<KSAnnotation> {
+    return this.annotations.filter { it.shortName.getShortName() == kClass.simpleName }.toList()
+}
+
 fun KSClassDeclaration.getShortName(): String {
     return this.simpleName.getShortName()
 }

@@ -28,7 +28,19 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
     }
 
     override fun index(classDeclaration: KSClassDeclaration): List<IndexDescribe> {
-        TODO("Not yet implemented")
+        val indexes = classDeclaration.getAnnotations(Index::class)
+        return indexes.map {
+            val name = it.getArgumentType("name")?.toString()!!
+            val properties = it.getArgumentType("properties")
+            val unique = it.getArgumentType("unique")!!.toString().toBoolean()
+            IndexDescribe(
+                name = name,
+                properties = emptyArray(),
+                unique = unique,
+                classDeclaration = classDeclaration
+            )
+        }
+        TODO("properties读取未完成。")
     }
 
     private fun columns(classDeclaration: KSClassDeclaration, columns: MutableList<ColumnDescribe>) {
