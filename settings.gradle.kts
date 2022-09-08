@@ -29,3 +29,4 @@ fun defineSubProject(name: String, path: String) {
 defineSubProject("mybatis-ext-core", "mybatis-ext-core")
 defineSubProject("mybatis-ext-ksp", "mybatis-ext-ksp")
 defineSubProject("mybatis-ext-dialect", "mybatis-ext-dialect")
+defineSubProject("mybatis-ext-ast", "mybatis-ext-ast")
