@@ -17,68 +17,70 @@ data class QueryExpression(
     val alias: String?
 )
 
+abstract class ComputeExpression() : Expression()
+
 data class UnaryExpression(
     val type: UnaryType,
     val expression: Expression
-) : Expression()
+) : ComputeExpression()
 
 data class BinaryExpression(
     val type: BinaryType,
     val left: Expression,
     val right: Expression
-) : Expression()
+) : ComputeExpression()
 
 data class BetweenExpression(
     val expression: Expression,
     val lower: Expression,
     val upper: Expression,
     val notBetween: Boolean = false
-) : Expression()
+) : ComputeExpression()
 
 data class AggregateExpression(
     val type: AggregateType,
     val argument: Expression?,
     val isDistinct: Boolean = false
-) : Expression()
+) : ComputeExpression()
 
 data class ArgumentExpression(
     val value: Any?
-) : Expression()
+) : ComputeExpression()
 
 data class FunctionExpression(
     val functionName: String,
     val arguments: List<Expression>,
-) : Expression()
+) : ComputeExpression()
 
 data class CastingExpression(
     val expression: Expression,
-) : Expression()
+) : ComputeExpression()
 
 
 data class ColumnExpression(
     val name: String
-) : Expression()
+) : ComputeExpression()
 
 data class ColumnDeclaringExpression(
     val expression: Expression,
     val name: String,
-) : Expression()
+) : ComputeExpression()
 
 data class ExistsExpression(
     val query: Expression,
     val notExists: Boolean = false,
-) : Expression()
+) : ComputeExpression()
 
 data class ILikeExpression(
     val left: Expression,
     val right: Expression,
-) : Expression()
+) : ComputeExpression()
 
 data class InListExpression(
     val left: Expression,
     val values: List<Expression>,
     val notIn: Boolean = false
-) : Expression()
+) : ComputeExpression()
 
 
 enum class AggregateType(val value: String) {

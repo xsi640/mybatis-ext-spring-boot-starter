@@ -14,6 +14,7 @@ dependencies {
     implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
 
     api(project(":mybatis-ext-core"))
+    api(project(":mybatis-ext-ast"))
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinTestJunitVersion")
     testImplementation("com.github.tschuchortdev:kotlin-compile-testing:$kotlinCompileTestingVersion")
