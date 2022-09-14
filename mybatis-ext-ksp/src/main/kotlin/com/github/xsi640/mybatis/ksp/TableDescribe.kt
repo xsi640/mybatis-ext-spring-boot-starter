@@ -14,6 +14,7 @@ data class TableDescribe(
 
 data class ColumnDescribe(
     val name: String,
+    val propertyName: String,
     val type: KSType,
     val nullable: Boolean,
     val javaType: KSType?,

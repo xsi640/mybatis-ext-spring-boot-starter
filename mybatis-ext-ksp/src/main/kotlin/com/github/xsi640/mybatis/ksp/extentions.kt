@@ -41,6 +41,12 @@ fun KSClassDeclaration.asTypeName(): ClassName {
     return ClassName(this.packageName.asString(), this.simpleName.getShortName())
 }
 
+fun KSClassDeclaration.asPageTypeName(): ParameterizedTypeName {
+    return pageClassName.parameterizedBy(
+        ClassName(this.packageName.asString(), this.simpleName.getShortName())
+    )
+}
+
 fun KSAnnotation.getArgument(name: String): KSValueArgument? {
     return this.arguments.firstOrNull { it.name?.getShortName() == name }
 }
@@ -64,3 +70,4 @@ fun KSPropertyDeclaration.getAnnotations(kClass: KClass<*>): List<KSAnnotation> 
 val KClassClassName = ClassName("kotlin.reflect", "KClass")
 val ListClassName = ClassName("kotlin.collections", "List")
 val MapClassName = ClassName("kotlin.collections", "Map")
+val pageClassName = ClassName("com.github.xsi640.mybatis.core", "Paged")

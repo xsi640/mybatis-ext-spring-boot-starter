@@ -127,6 +127,7 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
             columns.add(
                 ColumnDescribe(
                     name = name,
+                    propertyName = propertyName,
                     type = propertyDeclaration.type.resolve(),
                     nullable = nullable,
                     javaType = javaType,
