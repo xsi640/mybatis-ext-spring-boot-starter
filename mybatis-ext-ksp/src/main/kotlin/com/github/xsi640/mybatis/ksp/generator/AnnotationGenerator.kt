@@ -4,12 +4,11 @@ import com.github.xsi640.mybatis.ksp.TableDescribe
 import com.github.xsi640.mybatis.ksp.getShortName
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
-import org.apache.ibatis.annotations.Result
-import org.apache.ibatis.annotations.Results
+import org.apache.ibatis.annotations.*
 import org.apache.ibatis.type.JdbcType
 
 interface AnnotationGenerator {
-    fun select(tableDescribe: TableDescribe, where: String): List<AnnotationSpec>
+    fun select(table: TableDescribe, where: String): List<AnnotationSpec>
     fun selectElements(table: TableDescribe): AnnotationSpec
     fun count(table: TableDescribe, where: String): List<AnnotationSpec>
     fun insert(table: TableDescribe): List<AnnotationSpec>
@@ -18,33 +17,94 @@ interface AnnotationGenerator {
     fun delete(table: TableDescribe, where: String): List<AnnotationSpec>
 }
 
-class AnnotationGeneratorImpl : AnnotationGenerator {
-    override fun select(tableDescribe: TableDescribe, where: String): List<AnnotationSpec> {
-        TODO("Not yet implemented")
+class AnnotationGeneratorImpl(
+    val generator: SqlGenerator
+) : AnnotationGenerator {
+    override fun select(table: TableDescribe, where: String): List<AnnotationSpec> {
+        val result = mutableListOf<AnnotationSpec>()
+        result.add(
+            AnnotationSpec.builder(Select::class)
+                .addMember("%S", generator.select(table, where))
+                .build()
+        )
+        result.add(selectElements(table))
+        return result
     }
 
     override fun selectElements(table: TableDescribe): AnnotationSpec {
-        TODO("Not yet implemented")
+        return buildSelectResults(table)
     }
 
     override fun count(table: TableDescribe, where: String): List<AnnotationSpec> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<AnnotationSpec>()
+        result.add(
+            AnnotationSpec.builder(Select::class)
+                .addMember("%S", generator.count(table, where))
+                .build()
+        )
+        return result
     }
 
     override fun insert(table: TableDescribe): List<AnnotationSpec> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<AnnotationSpec>()
+        val primaryKey = table.columns.firstOrNull { it.primaryKeyGenerate != null }
+            ?: throw IllegalArgumentException("primary key not empty.")
+        result.add(
+            AnnotationSpec.builder(Insert::class)
+                .addMember("%S", generator.insert(table))
+                .build()
+        )
+        if (primaryKey.primaryKeyGenerate == true) {
+            result.add(
+                AnnotationSpec.builder(Options::class)
+                    .addMember("useGeneratedKeys = true")
+                    .addMember("keyProperty = %S", primaryKey.propertyName)
+                    .addMember("keyColumn = %S", primaryKey.name)
+                    .build()
+            )
+        }
+        return result
     }
 
     override fun batchInsert(table: TableDescribe): List<AnnotationSpec> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<AnnotationSpec>()
+        val primaryKey = table.columns.firstOrNull { it.primaryKeyGenerate != null }
+            ?: throw IllegalArgumentException("primary key not empty.")
+        result.add(
+            AnnotationSpec.builder(Insert::class)
+                .addMember("%S", generator.batchInsert(table))
+                .build()
+        )
+        if (primaryKey.primaryKeyGenerate == true) {
+            result.add(
+                AnnotationSpec.builder(Options::class)
+                    .addMember("useGeneratedKeys = true")
+                    .addMember("keyProperty = %S", primaryKey.propertyName)
+                    .addMember("keyColumn = %S", primaryKey.name)
+                    .build()
+            )
+        }
+        return result
     }
 
     override fun update(table: TableDescribe, where: String): List<AnnotationSpec> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<AnnotationSpec>()
+        result.add(
+            AnnotationSpec.builder(Update::class)
+                .addMember("%S", generator.update(table, where))
+                .build()
+        )
+        return result
     }
 
     override fun delete(table: TableDescribe, where: String): List<AnnotationSpec> {
-        TODO("Not yet implemented")
+        val result = mutableListOf<AnnotationSpec>()
+        result.add(
+            AnnotationSpec.builder(Delete::class)
+                .addMember("%S", generator.delete(table, where))
+                .build()
+        )
+        return result
     }
 
     private fun buildSelectResults(table: TableDescribe): AnnotationSpec {

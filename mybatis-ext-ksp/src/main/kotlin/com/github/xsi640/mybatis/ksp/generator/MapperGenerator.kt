@@ -3,14 +3,12 @@ package com.github.xsi640.mybatis.ksp.generator
 import com.github.xsi640.mybatis.ast.ComputeExpression
 import com.github.xsi640.mybatis.ast.OrderByExpression
 import com.github.xsi640.mybatis.core.QueryProvider
-import com.github.xsi640.mybatis.ksp.TableDescribe
-import com.github.xsi640.mybatis.ksp.asKClassTypeName
-import com.github.xsi640.mybatis.ksp.asPageTypeName
-import com.github.xsi640.mybatis.ksp.asTypeName
+import com.github.xsi640.mybatis.ksp.*
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.writeTo
+import org.apache.ibatis.annotations.Param
 import org.apache.ibatis.annotations.SelectProvider
 
 interface MapperGenerator {
@@ -79,6 +77,47 @@ class MapperGeneratorImpl(
                 .returns(tableDescribe.classDeclaration.asPageTypeName())
                 .build()
         )
+        result.add(
+            FunSpec.builder("listAll")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(annotationGenerator.select(tableDescribe, ""))
+                .returns(tableDescribe.classDeclaration.asListTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("listAllByWhere")
+                .addAnnotation(annotationGenerator.selectElements(tableDescribe))
+                .addAnnotation(providerAnnotation("listAllByWhere"))
+                .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
+                .addParameter("selects", List::class.parameterizedBy(String::class).copy(true))
+                .addParameter("order", OrderByExpression::class.asTypeName(), KModifier.VARARG)
+                .returns(tableDescribe.classDeclaration.asListTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("findOneByWhere")
+                .addAnnotation(annotationGenerator.selectElements(tableDescribe))
+                .addAnnotation(providerAnnotation("findOneByWhere"))
+                .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
+                .addParameter("selects", List::class.parameterizedBy(String::class).copy(true))
+                .returns(tableDescribe.classDeclaration.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("findOneById")
+                .addAnnotations(
+                    annotationGenerator.select(
+                        tableDescribe,
+                        "${primaryKey.name}=${sqlGenerator.column(primaryKey, "")}"
+                    )
+                )
+                .addParameter(
+                    ParameterSpec.builder("id", primaryKey.type.asTypeName())
+                        .param(primaryKey.name)
+                        .build()
+                )
+                .build()
+        )
         TODO("generate functions")
     }
 
@@ -88,4 +127,12 @@ class MapperGeneratorImpl(
             .addMember("method = %S", method)
             .build()
     }
+}
+
+fun ParameterSpec.Builder.param(s: String): ParameterSpec.Builder {
+    return this.addAnnotation(
+        AnnotationSpec.builder(Param::class)
+            .addMember("%S", s)
+            .build()
+    )
 }

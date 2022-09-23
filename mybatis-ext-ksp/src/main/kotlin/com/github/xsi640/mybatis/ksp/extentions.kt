@@ -32,13 +32,19 @@ fun KSClassDeclaration.getSupperClassDeclaration(): KSClassDeclaration? {
 }
 
 fun KSClassDeclaration.asKClassTypeName(): ParameterizedTypeName {
-    return KClassClassName.parameterizedBy(
+    return kClassClassName.parameterizedBy(
         ClassName(this.packageName.asString(), this.simpleName.getShortName())
     )
 }
 
 fun KSClassDeclaration.asTypeName(): ClassName {
     return ClassName(this.packageName.asString(), this.simpleName.getShortName())
+}
+
+fun KSClassDeclaration.asListTypeName(): ParameterizedTypeName {
+    return listClassName.parameterizedBy(
+        ClassName(this.packageName.asString(), this.simpleName.getShortName())
+    )
 }
 
 fun KSClassDeclaration.asPageTypeName(): ParameterizedTypeName {
@@ -59,6 +65,10 @@ fun KSType.getShortName(): String {
     return this.declaration.simpleName.getShortName()
 }
 
+fun KSType.asTypeName(): ClassName {
+    return ClassName(this.declaration.packageName.asString(), this.declaration.simpleName.getShortName())
+}
+
 fun KSPropertyDeclaration.getAnnotation(kClass: KClass<*>): KSAnnotation? {
     return this.annotations.firstOrNull { it.shortName.getShortName() == kClass.simpleName }
 }
@@ -67,7 +77,7 @@ fun KSPropertyDeclaration.getAnnotations(kClass: KClass<*>): List<KSAnnotation> 
     return this.annotations.filter { it.shortName.getShortName() == kClass.simpleName }.toList()
 }
 
-val KClassClassName = ClassName("kotlin.reflect", "KClass")
-val ListClassName = ClassName("kotlin.collections", "List")
-val MapClassName = ClassName("kotlin.collections", "Map")
+val kClassClassName = ClassName("kotlin.reflect", "KClass")
+val listClassName = ClassName("kotlin.collections", "List")
+val mapClassName = ClassName("kotlin.collections", "Map")
 val pageClassName = ClassName("com.github.xsi640.mybatis.core", "Paged")
