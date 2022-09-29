@@ -103,7 +103,7 @@ class StandardClassDeclarationExtractor : ClassDeclarationExtractor {
                 null
             } else {
                 val typeHandlerType = converter.getArgumentValue("typeHandler") as KSType
-                if (EmptyPropertyConverter::class.simpleName
+                if (EmptyTypeHandler::class.simpleName
                     == typeHandlerType.getShortName()
                 ) {
                     null

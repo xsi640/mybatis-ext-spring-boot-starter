@@ -1,4 +1,4 @@
-package com.github.xsi640.mybatis.ksp
+package com.github.xsi640.mybatis.ksp.example
 
 import com.github.xsi640.mybatis.ast.ComputeExpression
 import com.github.xsi640.mybatis.ast.OrderByExpression

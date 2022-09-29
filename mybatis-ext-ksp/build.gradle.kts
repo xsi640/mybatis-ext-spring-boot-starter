@@ -28,6 +28,7 @@ noArg {
 kotlin {
     sourceSets.main {
         kotlin.srcDir("build/generated/ksp/main/kotlin")
+        kotlin.srcDir("build/tmp/ksp/sources/kotlin")
     }
     sourceSets.test {
         kotlin.srcDir("build/generated/ksp/test/kotlin")

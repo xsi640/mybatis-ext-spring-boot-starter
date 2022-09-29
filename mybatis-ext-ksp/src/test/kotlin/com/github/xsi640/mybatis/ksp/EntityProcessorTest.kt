@@ -13,7 +13,7 @@ class EntityProcessorTest {
     fun test() {
         val source = SourceFile.kotlin(
             "User.kt", """
-    package com.github.xsi640.mybatis.test
+    package com.github.xsi640.mybatis.ksp.example
 
     import com.github.xsi640.mybatis.core.*import org.apache.ibatis.type.JdbcType
 

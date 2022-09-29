@@ -1,7 +1,5 @@
 package com.github.xsi640.mybatis.core
 
-interface PropertyConverter<Tin, Tout> {
+import org.apache.ibatis.type.TypeHandler
 
-}
-
-class EmptyPropertyConverter : PropertyConverter<Unit, Unit> {}
+interface EmptyTypeHandler : TypeHandler<Unit>

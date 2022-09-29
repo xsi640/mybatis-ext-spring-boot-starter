@@ -1,6 +1,7 @@
 package com.github.xsi640.mybatis.core
 
 import org.apache.ibatis.type.JdbcType
+import org.apache.ibatis.type.TypeHandler
 import kotlin.reflect.KClass
 
 @MustBeDocumented
@@ -25,7 +26,7 @@ annotation class Column(
 annotation class Converter(
     val javaType: KClass<*> = Void::class,
     val jdbcType: JdbcType = JdbcType.UNDEFINED,
-    val typeHandler: KClass<out PropertyConverter<*, *>> = EmptyPropertyConverter::class
+    val typeHandler: KClass<out TypeHandler<*>> = EmptyTypeHandler::class
 )
 
 @MustBeDocumented
