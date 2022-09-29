@@ -1,7 +1,6 @@
 package com.github.xsi640.mybatis.ksp.generator
 
 import com.github.xsi640.mybatis.ksp.TableDescribe
-import com.github.xsi640.mybatis.ksp.getShortName
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import org.apache.ibatis.annotations.*
@@ -12,7 +11,7 @@ interface AnnotationGenerator {
     fun selectElements(table: TableDescribe): AnnotationSpec
     fun count(table: TableDescribe, where: String): List<AnnotationSpec>
     fun insert(table: TableDescribe): List<AnnotationSpec>
-    fun batchInsert(table: TableDescribe): List<AnnotationSpec>
+    fun inserts(table: TableDescribe): List<AnnotationSpec>
     fun update(table: TableDescribe, where: String): List<AnnotationSpec>
     fun delete(table: TableDescribe, where: String): List<AnnotationSpec>
 }
@@ -66,7 +65,7 @@ class AnnotationGeneratorImpl(
         return result
     }
 
-    override fun batchInsert(table: TableDescribe): List<AnnotationSpec> {
+    override fun inserts(table: TableDescribe): List<AnnotationSpec> {
         val result = mutableListOf<AnnotationSpec>()
         val primaryKey = table.columns.firstOrNull { it.primaryKeyGenerate != null }
             ?: throw IllegalArgumentException("primary key not empty.")

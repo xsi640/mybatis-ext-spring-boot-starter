@@ -2,14 +2,15 @@ package com.github.xsi640.mybatis.ksp.generator
 
 import com.github.xsi640.mybatis.ast.ComputeExpression
 import com.github.xsi640.mybatis.ast.OrderByExpression
+import com.github.xsi640.mybatis.core.ForeachLanguageDriver
 import com.github.xsi640.mybatis.core.QueryProvider
 import com.github.xsi640.mybatis.ksp.*
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.ksp.writeTo
-import org.apache.ibatis.annotations.Param
-import org.apache.ibatis.annotations.SelectProvider
+import org.apache.ibatis.annotations.*
+import kotlin.reflect.KClass
 
 interface MapperGenerator {
 
@@ -68,7 +69,7 @@ class MapperGeneratorImpl(
             FunSpec.builder("listByWhere")
                 .addModifiers(KModifier.ABSTRACT)
                 .addAnnotation(annotationGenerator.selectElements(tableDescribe))
-                .addAnnotation(providerAnnotation("listByWherePage"))
+                .addAnnotation(providerAnnotation(SelectProvider::class, "listByWherePage"))
                 .addParameter("page", Long::class.asTypeName())
                 .addParameter("count", Long::class.asTypeName())
                 .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
@@ -86,8 +87,9 @@ class MapperGeneratorImpl(
         )
         result.add(
             FunSpec.builder("listAllByWhere")
+                .addModifiers(KModifier.ABSTRACT)
                 .addAnnotation(annotationGenerator.selectElements(tableDescribe))
-                .addAnnotation(providerAnnotation("listAllByWhere"))
+                .addAnnotation(providerAnnotation(SelectProvider::class, "listAllByWhere"))
                 .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
                 .addParameter("selects", List::class.parameterizedBy(String::class).copy(true))
                 .addParameter("order", OrderByExpression::class.asTypeName(), KModifier.VARARG)
@@ -96,8 +98,9 @@ class MapperGeneratorImpl(
         )
         result.add(
             FunSpec.builder("findOneByWhere")
+                .addModifiers(KModifier.ABSTRACT)
                 .addAnnotation(annotationGenerator.selectElements(tableDescribe))
-                .addAnnotation(providerAnnotation("findOneByWhere"))
+                .addAnnotation(providerAnnotation(SelectProvider::class, "findOneByWhere"))
                 .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
                 .addParameter("selects", List::class.parameterizedBy(String::class).copy(true))
                 .returns(tableDescribe.classDeclaration.asTypeName())
@@ -105,6 +108,7 @@ class MapperGeneratorImpl(
         )
         result.add(
             FunSpec.builder("findOneById")
+                .addModifiers(KModifier.ABSTRACT)
                 .addAnnotations(
                     annotationGenerator.select(
                         tableDescribe,
@@ -118,11 +122,140 @@ class MapperGeneratorImpl(
                 )
                 .build()
         )
-        TODO("generate functions")
+        result.add(
+            FunSpec.builder("findAllById")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(
+                    annotationGenerator.select(
+                        tableDescribe,
+                        "${primaryKey.name} IN (#{ids})"
+                    )
+                )
+                .addAnnotation(
+                    AnnotationSpec.builder(Lang::class)
+                        .addMember("%T::class", ForeachLanguageDriver::class).build()
+                )
+                .addParameter(
+                    ParameterSpec.builder("ids", primaryKey.type.asListTypeName())
+                        .param("ids")
+                        .build()
+                )
+                .returns(tableDescribe.classDeclaration.asListTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("insert")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(annotationGenerator.insert(tableDescribe))
+                .addParameter(tableDescribe.name.camelName(), tableDescribe.classDeclaration.asTypeName())
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("inserts")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(annotationGenerator.inserts(tableDescribe))
+                .addParameter(
+                    ParameterSpec.builder("items", tableDescribe.classDeclaration.asListTypeName())
+                        .param("items").build()
+                )
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("update")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(
+                    annotationGenerator.update(
+                        tableDescribe,
+                        "${primaryKey.name}=#{${primaryKey.propertyName}}"
+                    )
+                )
+                .addParameter(tableDescribe.name.camelName(), tableDescribe.classDeclaration.asTypeName())
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("updateByWhere")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotation(providerAnnotation(UpdateProvider::class, "updateByWhere"))
+                .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
+                .addParameter("parameters", parameterAsTypeName.copy(true))
+                .addParameter("values", parameterAsTypeName)
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("deleteById")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(
+                    annotationGenerator.delete(
+                        tableDescribe,
+                        "${primaryKey.propertyName}=${sqlGenerator.column(primaryKey, "")}"
+                    )
+                )
+                .addParameter(
+                    ParameterSpec.builder("id", primaryKey.type.asTypeName())
+                        .param(primaryKey.propertyName)
+                        .build()
+                )
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("deleteByIds")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotations(
+                    annotationGenerator.delete(
+                        tableDescribe,
+                        "${primaryKey.name} IN (#{ids})"
+                    )
+                )
+                .addAnnotation(
+                    AnnotationSpec.builder(Lang::class)
+                        .addMember("%T::class", ForeachLanguageDriver::class).build()
+                )
+                .addParameter(
+                    ParameterSpec.builder("ids", primaryKey.type.asListTypeName())
+                        .param("ids")
+                        .build()
+                )
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("deleteAll")
+                .returns(Long::class.asTypeName())
+                .addStatement("return deleteByWhere(null)")
+                .build()
+        )
+        result.add(
+            FunSpec.builder("deleteByWhere")
+                .addModifiers(KModifier.ABSTRACT)
+                .addAnnotation(providerAnnotation(DeleteProvider::class, "deleteByWhere"))
+                .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
+                .addParameter("parameters", parameterAsTypeName.copy(true))
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("countByWhere")
+                .addAnnotation(providerAnnotation(SelectProvider::class, "countByWhere"))
+                .addParameter("where", ComputeExpression::class.asTypeName().copy(true))
+                .returns(Long::class.asTypeName())
+                .build()
+        )
+        result.add(
+            FunSpec.builder("count")
+                .returns(Long::class.asTypeName())
+                .addStatement("return countByWhere(null)")
+                .build()
+        )
+        return result
     }
 
-    private fun providerAnnotation(method: String): AnnotationSpec {
-        return AnnotationSpec.builder(SelectProvider::class)
+    private fun providerAnnotation(providerClass: KClass<out Annotation>, method: String): AnnotationSpec {
+        return AnnotationSpec.builder(providerClass)
             .addMember("type = %T::class", QueryProvider::class)
             .addMember("method = %S", method)
             .build()

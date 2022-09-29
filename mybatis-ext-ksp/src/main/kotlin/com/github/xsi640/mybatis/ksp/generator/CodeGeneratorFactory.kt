@@ -12,6 +12,8 @@ interface CodeGeneratorFactory {
 
 class CodeGeneratorFactoryImpl : CodeGeneratorFactory {
     override fun create(): CodeGenerator {
-        return StandardCodeGenerator()
+        val sqlGenerator = SqlGeneratorImpl()
+        val annotationGenerator = AnnotationGeneratorImpl(sqlGenerator)
+        return StandardCodeGenerator(sqlGenerator, annotationGenerator)
     }
 }
