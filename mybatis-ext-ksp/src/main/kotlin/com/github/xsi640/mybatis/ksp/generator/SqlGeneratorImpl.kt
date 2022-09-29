@@ -79,7 +79,7 @@ class SqlGeneratorImpl : SqlGenerator {
         columns.forEachIndexed { i, column ->
             sb.append(column.name).append("=")
             columnValue(column, "", sb)
-            if (i != columns.size) {
+            if (i != columns.size - 1) {
                 sb.append(", ")
             }
         }
@@ -111,7 +111,7 @@ class SqlGeneratorImpl : SqlGenerator {
     private fun columnNames(columns: List<ColumnDescribe>, sb: StringBuilder) {
         columns.forEachIndexed { i, column ->
             sb.append(column.name)
-            if (i != columns.size) {
+            if (i != columns.size - 1) {
                 sb.append(", ")
             }
         }
@@ -120,7 +120,7 @@ class SqlGeneratorImpl : SqlGenerator {
     private fun columnValues(columns: List<ColumnDescribe>, aliasTableName: String, sb: StringBuilder) {
         columns.forEachIndexed { i, column ->
             columnValue(column, aliasTableName, sb)
-            if (i != columns.size) {
+            if (i != columns.size - 1) {
                 sb.append(", ")
             }
         }
