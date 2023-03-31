@@ -1,7 +1,5 @@
 package com.github.xsi640.mybatis.ast
 
-import java.lang.invoke.VarHandle
-
 abstract class Expression {
 }
 

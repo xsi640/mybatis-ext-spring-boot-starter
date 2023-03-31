@@ -10,14 +10,19 @@ pluginManagement {
         id("org.springframework.boot") version springBootVersion
         id("io.spring.dependency-management") version springBootManagementVersion
         id("java")
-        id("com.google.devtools.ksp") version kspVersion
 
         kotlin("jvm") version kotlinVersion
         kotlin("plugin.spring") version kotlinVersion
-        kotlin("plugin.jpa") version kotlinVersion
         kotlin("plugin.noarg") version kotlinVersion
         kotlin("plugin.allopen") version kotlinVersion
-        kotlin("kapt") version kotlinVersion
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri("https://maven.aliyun.com/nexus/content/groups/public/")
+        }
+        mavenCentral()
     }
 }
 
@@ -27,6 +32,5 @@ fun defineSubProject(name: String, path: String) {
 }
 
 defineSubProject("mybatis-ext-core", "mybatis-ext-core")
-defineSubProject("mybatis-ext-ksp", "mybatis-ext-ksp")
 defineSubProject("mybatis-ext-dialect", "mybatis-ext-dialect")
 defineSubProject("mybatis-ext-ast", "mybatis-ext-ast")

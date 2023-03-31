@@ -8,7 +8,6 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.noarg") apply false
     kotlin("plugin.allopen") apply false
-    kotlin("kapt") apply false
 }
 
 allprojects {
@@ -43,7 +42,7 @@ allprojects {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://maven.aliyun.com/repository/public/")
+            url = uri("https://maven.aliyun.com/nexus/content/groups/public/")
         }
         mavenCentral()
     }

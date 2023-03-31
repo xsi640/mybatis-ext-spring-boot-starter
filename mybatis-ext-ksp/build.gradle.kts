@@ -4,21 +4,14 @@ val kotlinTestJunitVersion: String by project
 val kotlinCompileTestingVersion: String by project
 
 plugins {
-    id("com.google.devtools.ksp")
     id("kotlin-noarg")
 }
 
 dependencies {
-    implementation("com.google.devtools.ksp:symbol-processing-api:$kspVersion")
-    implementation("com.squareup:kotlinpoet:$kotlinPoetVersion")
-    implementation("com.squareup:kotlinpoet-ksp:$kotlinPoetVersion")
-
     api(project(":mybatis-ext-core"))
     api(project(":mybatis-ext-ast"))
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinTestJunitVersion")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing:$kotlinCompileTestingVersion")
-    testImplementation("com.github.tschuchortdev:kotlin-compile-testing-ksp:$kotlinCompileTestingVersion")
 }
 
 noArg {
